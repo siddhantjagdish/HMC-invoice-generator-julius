@@ -1,0 +1,6 @@
+echo "*.pyc
+__pycache__/
+venv/
+*.pdf
+.env
+.DS_Store" > .gitignore

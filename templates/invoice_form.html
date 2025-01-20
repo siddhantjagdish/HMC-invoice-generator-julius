@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Production Invoice Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .item-name {
+            width: 200px;
+        }
+        .price {
+            width: 100px;
+        }
+        .quantity {
+            width: 60px;
+        }
+        .total {
+            width: 100px;
+        }
+        input {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .totals {
+            margin-top: 20px;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+        }
+        .add-item-btn {
+            background-color: #28a745;
+        }
+        .remove-item-btn {
+            background-color: #dc3545;
+            padding: 5px 10px;
+        }
+        .equipment-templates {
+            display: none;
+        }
+        .custom-input-row {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .custom-input-row input {
+            margin-right: 10px;
+        }
+
+        .add-custom-btn {
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .add-custom-btn:hover {
+            background-color: #218838;
+        }
+        .client-details {
+            padding: 15px;
+        }
+        .form-row {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-row label {
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .form-row input, .form-row select {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .default-price {
+            color: #666;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Video Production Invoice Generator</h1>
+    
+    <!-- Hidden templates for new items -->
+    <div class="equipment-templates">
+        <div id="lens-template" class="item-row">
+            <select name="lens_name[]" class="item-name">
+                <option value="16-35mm GM" data-price="1000">16-35mm GM</option>
+                <option value="70-200mm GM" data-price="1000">70-200mm GM</option>
+                <option value="24-70mm GM" data-price="1000">24-70mm GM</option>
+            </select>
+            <input type="number" name="lens_price[]" class="price" min="0">
+            <span class="default-price"></span>
+            <input type="number" name="lens_quantity[]" class="quantity" value="1" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        
+        <div id="camera-template" class="item-row">
+            <select name="camera_name[]" class="item-name">
+                <option value="Sony A7SIII" data-price="2700">Sony A7SIII</option>
+                <option value="Sony FX3" data-price="3000">Sony FX3</option>
+                <option value="Sony A7IV" data-price="2500">Sony A7IV</option>
+            </select>
+            <input type="number" name="camera_price[]" class="price" min="0">
+            <span class="default-price"></span>
+            <input type="number" name="camera_quantity[]" class="quantity" value="1" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <div id="gimbal-template" class="item-row">
+            <select name="gimbal_name[]" class="item-name">
+                <option value="DJI RS3 Pro" data-price="1500">DJI RS3 Pro</option>
+                <option value="DJI RS3" data-price="1000">DJI RS3</option>
+                <option value="DJI RS2" data-price="1000">DJI RS2</option>
+                <option value="DJI RS4" data-price="1200">DJI RS4</option>
+            </select>
+            <input type="number" name="gimbal_price[]" class="price" min="0">
+            <span class="default-price"></span>
+            <input type="number" name="gimbal_quantity[]" class="quantity" value="1" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <div id="drone-template" class="item-row">
+            <select name="drone_name[]" class="item-name">
+                <option value="DJI Air 3" data-price="3000">DJI Air 3</option>
+                <option value="DJI Mavic 3" data-price="4000">DJI Mavic 3</option>
+                <option value="DJI Mini 3" data-price="2000">DJI Mini 3</option>
+            </select>
+            <input type="number" name="drone_price[]" class="price" min="0">
+            <span class="default-price"></span>
+            <input type="number" name="drone_quantity[]" class="quantity" value="1" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <div id="gimbal-template" class="item-row">
+            <select name="gimbal_name[]" class="item-name">
+                <option value="DJI RS3 Pro" data-price="1500">DJI RS3 Pro</option>
+                <option value="DJI RS3" data-price="1000">DJI RS3</option>
+                <option value="DJI RSC 2" data-price="800">DJI RSC 2</option>
+                <option value="Zhiyun Crane 3S" data-price="1200">Zhiyun Crane 3S</option>
+                <option value="Zhiyun Weebill 3" data-price="900">Zhiyun Weebill 3</option>
+            </select>
+            <input type="number" name="gimbal_price[]" class="price" min="0">
+            <span class="default-price"></span>
+            <input type="number" name="gimbal_quantity[]" class="quantity" value="1" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <div id="service-template" class="item-row">
+            <input type="text" name="service_name[]" class="item-name" readonly>
+            <input type="number" name="service_price[]" class="price" min="0">
+            <input type="number" name="service_quantity[]" class="quantity" value="1" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <div id="transport-template" class="item-row">
+            <input type="text" name="transport_name[]" class="item-name">
+            <input type="number" name="transport_expense[]" class="price" min="0">
+            <span class="total">₹0</span>
+            <button type="button" class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+    </div>
+
+    <form id="invoiceForm" action="/generate_invoice" method="POST">
+        <div class="section">
+            <h2>Client Details</h2>
+            <div class="client-details">
+                <div class="form-row">
+                    <label>Select Client:</label>
+                    <select id="clientSelect" onchange="updateClientName(this.value)">
+                        <option value="">-- Select Client --</option>
+                        <option value="ProSound India">ProSound India</option>
+                        <option value="Reynolds' Sound and Lighting Services">Reynolds' Sound and Lighting Services</option>
+                        <option value="custom">+ Add Custom Client</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>Client Name:</label>
+                    <input type="text" name="client_name" id="clientName" required>
+                </div>
+                <div class="form-row">
+                    <label>Client Phone:</label>
+                    <input type="tel" name="client_phone" id="clientPhone">
+                </div>
+                <div class="form-row">
+                    <label>Payment Mode:</label>
+                    <select name="payment_mode">
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>Equipment</h2>
+            <div id="lensSection">
+                <h3>Lenses</h3>
+                <button type="button" class="add-item-btn" onclick="addItem('lens')">Add Lens</button>
+                <div class="item-row custom-input-row">
+                    <input type="text" placeholder="Enter lens name" class="custom-name item-name">
+                    <input type="number" placeholder="Enter price" class="custom-price price">
+                    <button type="button" class="add-custom-btn" onclick="addCustomEquipment(this)">Add Custom Lens</button>
+            </div>
+            </div>
+
+            <div id="cameraSection">
+                <h3>Camera Body</h3>
+                <button type="button" class="add-item-btn" onclick="addItem('camera')">Add Camera</button>
+                <div class="item-row custom-input-row">
+                    <input type="text" placeholder="Enter Camera name" class="custom-name item-name">
+                    <input type="number" placeholder="Enter price" class="custom-price price">
+                    <button type="button" class="add-custom-btn" onclick="addCustomEquipment(this)">Add Custom Camera</button>
+            </div>
+            </div>
+            <div id="gimbalSection">
+                <h3>Gimbal</h3>
+                <button type="button" class="add-item-btn" onclick="addItem('gimbal')">Add Gimbal</button>
+                <div class="item-row custom-input-row">
+                    <input type="text" placeholder="Enter gimbal name" class="custom-name item-name">
+                    <input type="number" placeholder="Enter price" class="custom-price price">
+                    <button type="button" class="add-custom-btn" onclick="addCustomEquipment(this)">Add Custom Gimbal</button>
+                </div>
+            </div>
+            <div id="droneSection">
+                <h3>Drone Rental</h3>
+                <button type="button" class="add-item-btn" onclick="addItem('drone')">Add Drone</button>
+                <div class="item-row custom-input-row">
+                    <input type="text" placeholder="Enter gimbal name" class="custom-name item-name">
+                    <input type="number" placeholder="Enter price" class="custom-price price">
+                    <button type="button" class="add-custom-btn" onclick="addCustomEquipment(this)">Add Custom Gimbal</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Services</h2>
+            <div class="item-row">
+                <input type="text" name="service_name[]" class="item-name" value="Videography">
+                <input type="number" name="service_price[]" class="price" value="1500">
+                <input type="number" name="service_quantity[]" class="quantity" value="2" min="0">
+                <span class="total">₹2000</span>
+            </div>
+            <div class="item-row">
+                <input type="text" name="service_name[]" class="item-name" value="Photography">
+                <input type="number" name="service_price[]" class="price" value="500">
+                <input type="number" name="service_quantity[]" class="quantity" value="2" min="0">
+                <span class="total">₹500</span>
+            </div>
+            <div class="item-row">
+                <input type="text" name="service_name[]" class="item-name" value="Editing">
+                <input type="number" name="service_price[]" class="price" value="1500">
+                <input type="number" name="service_quantity[]" class="quantity" value="1" min="0">
+                <span class="total">₹1500</span>
+            </div>
+            <div class="item-row custom-input-row">
+                <input type="text" placeholder="Enter service name" class="custom-name item-name">
+                <input type="number" placeholder="Enter price" class="custom-price price">
+                <button type="button" class="add-custom-btn" onclick="addCustomService(this)">Add Custom Service</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Transport</h2>
+            <div class="item-row">
+                <input type="text" name="transport_name[]" class="item-name" value="Fuel">
+                <input type="number" name="transport_expense[]" class="price" value="200">
+                <span class="total">₹200</span>
+            </div>
+            <div class="item-row custom-input-row">
+                <input type="text" placeholder="Enter transport type" class="custom-name item-name">
+                <input type="number" placeholder="Enter amount" class="custom-price price">
+                <button type="button" class="add-custom-btn" onclick="addCustomTransport(this)">Add Custom Transport</button>
+            </div>
+        </div>
+
+        <div class="totals">
+            <div class="item-row">
+                <strong>Equipment Total:</strong>
+                <span id="equipmentTotal">₹0</span>
+            </div>
+            <div class="item-row">
+                <strong>Services Total:</strong>
+                <span id="servicesTotal">₹0</span>
+            </div>
+            <div class="item-row">
+                <strong>Transport Total:</strong>
+                <span id="transportTotal">₹0</span>
+            </div>
+            <div class="item-row">
+                <strong>Grand Total:</strong>
+                <span id="grandTotal">₹0</span>
+            </div>
+        </div>
+
+        <button type="submit">Generate Invoice</button>
+    </form>
+
+    <script>
+        function addItem(type) {
+            const template = document.getElementById(`${type}-template`);
+            const section = document.getElementById(`${type}Section`);
+            const newItem = template.cloneNode(true);
+            
+            // Update the selected option's price
+            const select = newItem.querySelector('select');
+            const priceInput = newItem.querySelector('.price');
+            const defaultPriceSpan = newItem.querySelector('.default-price');
+            const selectedOption = select.options[select.selectedIndex];
+            priceInput.value = selectedOption.dataset.price;
+            defaultPriceSpan.textContent = `(Default: ₹${selectedOption.dataset.price})`;
+            // Add change event listener for the select
+            select.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const priceInput = this.parentNode.querySelector('.price');
+                const defaultPriceSpan = this.parentNode.querySelector('.default-price');
+                priceInput.value = selectedOption.dataset.price;
+                defaultPriceSpan.textContent = `(Default: ₹${selectedOption.dataset.price})`;
+                updateTotals();
+            });
+            
+            // Remove from templates class to make visible
+            newItem.classList.remove('equipment-templates');
+            
+            // Insert before the Add button
+            section.insertBefore(newItem, section.lastElementChild);
+            updateTotals();
+        }
+
+        function removeItem(button) {
+            button.parentNode.remove();
+            updateTotals();
+        }
+        function updateClientName(selectedValue) {
+            const clientNameInput = document.getElementById('clientName');
+            const clientPhoneInput = document.querySelector('input[name="client_phone"]');
+            
+            if (selectedValue === 'custom') {
+                clientNameInput.value = '';
+                clientNameInput.readOnly = false;
+                clientNameInput.focus();
+                clientPhoneInput.value = '';
+                clientPhoneInput.readOnly = false;
+            } else if (selectedValue !== '') {
+                clientNameInput.value = selectedValue;
+                clientNameInput.readOnly = true;
+                clientPhoneInput.value = clientData[selectedValue].phone;
+                clientPhoneInput.readOnly = true;
+            } else {
+                clientNameInput.value = '';
+                clientPhoneInput.value = '';
+            }
+        }
+        function updateTotals() {
+            let equipmentTotal = 0;
+            let servicesTotal = 0;
+            let transportTotal = 0;
+
+            // Calculate equipment totals for all types (lenses, cameras, drones)
+            ['lens', 'camera', 'drone', 'gimbal'].forEach(type => {
+                document.querySelectorAll(`[name="${type}_name[]"]`).forEach((element, index) => {
+                    const row = element.closest('.item-row');
+                    const price = parseFloat(row.querySelector(`[name="${type}_price[]"]`).value) || 0;
+                    const quantity = parseFloat(row.querySelector(`[name="${type}_quantity[]"]`).value) || 0;
+                    const total = price * quantity;
+                    row.querySelector('.total').textContent = `₹${total}`;
+                    equipmentTotal += total;
+                });
+            });
+
+            // Calculate services totals
+            document.querySelectorAll('[name="service_name[]"]').forEach((_, index) => {
+                const row = document.querySelectorAll('[name="service_name[]"]')[index].closest('.item-row');
+                const price = parseFloat(row.querySelector('[name="service_price[]"]').value) || 0;
+                const quantity = parseFloat(row.querySelector('[name="service_quantity[]"]').value) || 0;
+                const total = price * quantity;
+                row.querySelector('.total').textContent = `₹${total}`;
+                servicesTotal += total;
+            });
+
+            // Calculate transport totals
+            document.querySelectorAll('[name="transport_expense[]"]').forEach(input => {
+                const expense = parseFloat(input.value) || 0;
+                transportTotal += expense;
+                input.closest('.item-row').querySelector('.total').textContent = `₹${expense}`;
+            });
+
+            // Update totals display
+            document.getElementById('equipmentTotal').textContent = `₹${equipmentTotal}`;
+            document.getElementById('servicesTotal').textContent = `₹${servicesTotal}`;
+            document.getElementById('transportTotal').textContent = `₹${transportTotal}`;
+            document.getElementById('grandTotal').textContent = `₹${equipmentTotal + servicesTotal + transportTotal}`;
+        }
+
+        // Add event listeners for input changes
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('quantity') || 
+                e.target.classList.contains('price') || 
+                e.target.name === 'transport_expense[]') {
+                updateTotals();
+            }
+        });
+
+        function addCustomEquipment(button) {
+            // Get the section this button belongs to
+            const section = button.closest('div[id$="Section"]');
+            const sectionId = section.id;
+            const type = sectionId.replace('Section', '').toLowerCase();
+            
+            // Get values from custom inputs
+            const customName = button.parentNode.querySelector('.custom-name').value;
+            const customPrice = button.parentNode.querySelector('.custom-price').value;
+            
+            if (!customName || !customPrice) {
+                alert('Please enter both name and price');
+                return;
+            }
+
+            // Clone the template
+            const template = document.getElementById(`${type}-template`);
+            const newItem = template.cloneNode(true);
+            newItem.classList.remove('equipment-templates');
+
+            // Get the select element and add new option
+            const select = newItem.querySelector('select');
+            const newOption = document.createElement('option');
+            newOption.value = customName;
+            newOption.text = customName;
+            newOption.dataset.price = customPrice;
+            
+            // Clear existing options and add the custom one
+            select.innerHTML = '';
+            select.appendChild(newOption);
+            
+            // Set the price
+            const priceInput = newItem.querySelector('.price');
+            const defaultPriceSpan = newItem.querySelector('.default-price');
+            priceInput.value = customPrice;
+            defaultPriceSpan.textContent = `(Default: ₹${customPrice})`;
+
+            // Insert before the custom input row
+            section.insertBefore(newItem, button.parentNode);
+            
+            // Clear the custom input fields
+            button.parentNode.querySelector('.custom-name').value = '';
+            button.parentNode.querySelector('.custom-price').value = '';
+            
+            updateTotals();
+        }
+        function addCustomService(button) {
+            const customName = button.parentNode.querySelector('.custom-name').value;
+            const customPrice = button.parentNode.querySelector('.custom-price').value;
+            
+            if (!customName || !customPrice) {
+                alert('Please enter both service name and price');
+                return;
+            }
+
+            const template = document.getElementById('service-template');
+            const newItem = template.cloneNode(true);
+            newItem.classList.remove('equipment-templates');
+
+            // Set the values
+            newItem.querySelector('.item-name').value = customName;
+            newItem.querySelector('.price').value = customPrice;
+            
+            // Insert before the custom input row
+            button.parentNode.parentNode.insertBefore(newItem, button.parentNode);
+            
+            // Clear the custom input fields
+            button.parentNode.querySelector('.custom-name').value = '';
+            button.parentNode.querySelector('.custom-price').value = '';
+            
+            updateTotals();
+        }
+        const clientData = {
+            'ProSound India': {
+                phone: '123456789'
+            },
+            'Reynolds\' Sound and Lighting Services': {
+                phone: '987654321'
+            }
+        };
+        // Initialize totals on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTotals();
+        });
+    </script>
+</body>
+</html>
